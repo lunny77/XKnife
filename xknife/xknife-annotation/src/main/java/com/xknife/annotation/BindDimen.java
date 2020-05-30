@@ -1,6 +1,6 @@
-package com.lunny.xknife.annotation;
+package com.xknife.annotation;
 
-import androidx.annotation.IdRes;
+import androidx.annotation.DimenRes;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
-public @interface BindView {
+public @interface BindDimen {
 
-    /* View id to which the field will be bound. */
-    @IdRes int value();
+    /* Dimen resource ID to which the field will be bound. */
+    @DimenRes int value();
+
 }

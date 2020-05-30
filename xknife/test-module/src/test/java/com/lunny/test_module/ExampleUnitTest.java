@@ -1,4 +1,4 @@
-package com.lunny.xknife.annotation;
+package com.lunny.test_module;
 
 import org.junit.Test;
 

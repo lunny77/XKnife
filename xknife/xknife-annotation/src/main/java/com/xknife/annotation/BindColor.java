@@ -1,4 +1,4 @@
-package com.lunny.xknife.annotation;
+package com.xknife.annotation;
 
 import androidx.annotation.ColorRes;
 

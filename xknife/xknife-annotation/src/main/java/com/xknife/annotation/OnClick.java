@@ -1,6 +1,8 @@
-package com.lunny.xknife.annotation;
+package com.xknife.annotation;
 
-import androidx.annotation.StringRes;
+import android.view.View;
+
+import androidx.annotation.IdRes;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,9 +12,8 @@ import java.lang.annotation.Target;
 
 @Documented
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.FIELD)
-public @interface BindString {
+@Target(ElementType.METHOD)
+public @interface OnClick {
 
-    /* String resource id to which the field will be bound. */
-    @StringRes int value();
+    @IdRes int[] value() default {View.NO_ID};
 }

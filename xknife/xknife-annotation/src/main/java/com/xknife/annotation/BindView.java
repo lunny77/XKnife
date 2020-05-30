@@ -1,6 +1,6 @@
-package com.lunny.xknife.annotation;
+package com.xknife.annotation;
 
-import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
-public @interface BindDrawable {
+public @interface BindView {
 
-    /* Drawable resource ID to which the field will be bound. */
-    @DrawableRes int value();
+    /* View id to which the field will be bound. */
+    @IdRes int value();
 }

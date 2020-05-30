@@ -1,4 +1,4 @@
-package com.lunny.xknife.annotation;
+package com.lunny.test_module;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.lunny.xknife.annotation.test", appContext.getPackageName());
+        assertEquals("com.lunny.test_module.test", appContext.getPackageName());
     }
 }

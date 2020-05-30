@@ -1,2 +1,3 @@
 rootProject.name='XKnife'
 include ':app'
+include ':xknife:xknife-annotation'

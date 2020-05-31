@@ -1,4 +1,4 @@
-package com.xknife.compiler;
+package com.xknife;
 
 import android.view.View;
 
@@ -15,6 +15,7 @@ public class Utils {
             return view;
         }
         String name = getResourceEntryName(source, id);
+        throw new IllegalStateException("Required view '"
                 + name
                 + "' with ID "
                 + id

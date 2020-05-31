@@ -1,7 +1,5 @@
 package com.xknife.annotation;
 
-import android.view.View;
-
 import androidx.annotation.IdRes;
 
 import java.lang.annotation.Documented;
@@ -15,5 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface OnClick {
 
-    @IdRes int[] value() default {View.NO_ID};
+    @IdRes int[] value() default {};
 }

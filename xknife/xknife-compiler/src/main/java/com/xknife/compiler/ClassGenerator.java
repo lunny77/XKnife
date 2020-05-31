@@ -36,7 +36,8 @@ public class ClassGenerator implements CodeGenerator {
     public void handle(TypeSpec.Builder classBuilder, MethodSpec.Builder methodBuilder, Map<String, Set<? extends Element>> annotations) {
         String fullName = classElement.asType().toString();
         String packageName = fullName.substring(0, fullName.lastIndexOf("."));
-        TypeSpec.Builder builder = TypeSpec.classBuilder(ClassName.get(packageName, classElement.getSimpleName() + "_ViewBinding"));
+        TypeSpec.Builder builder = TypeSpec.classBuilder(ClassName.get(packageName, classElement.getSimpleName() + "_ViewBinding"))
+                .addModifiers(Modifier.FINAL, Modifier.PUBLIC);
         builder.addField(FieldSpec.builder(TypeName.get(classElement.asType()), "target", Modifier.PRIVATE).build());
 
         if (nextGenerator != null) {

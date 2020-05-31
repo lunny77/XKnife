@@ -39,8 +39,8 @@ public class XKnife {
             return constructor;
         }
         try {
-            Class<?> viewBindingCls = Class.forName(cls.getSimpleName() + "_ViewBinding");
-            constructor = viewBindingCls.getConstructor(Activity.class, View.class);
+            Class<?> viewBindingCls = Class.forName(cls.getName() + "_ViewBinding");
+            constructor = viewBindingCls.getConstructor(cls, View.class);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

@@ -11,8 +11,7 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 
-public class ConstructorGenerator implements CodeGenerator {
-    CodeGenerator nextGenerator;
+public class ConstructorGenerator extends CodeGenerator {
     private Element classElement;
 
     public ConstructorGenerator(Element classElement) {

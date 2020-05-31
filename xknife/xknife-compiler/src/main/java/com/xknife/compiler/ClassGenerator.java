@@ -12,14 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.tools.Diagnostic;
 
-public class ClassGenerator implements CodeGenerator {
-    CodeGenerator nextGenerator;
-
+public class ClassGenerator extends CodeGenerator {
     private Element classElement;
     private Filer filer;
 

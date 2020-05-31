@@ -10,8 +10,7 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 
-public class BindColorGenerator implements CodeGenerator {
-    CodeGenerator nextGenerator;
+public class BindColorGenerator extends CodeGenerator {
 
     @Override
     public void handle(TypeSpec.Builder classBuilder, MethodSpec.Builder methodBuilder, Map<String, Set<? extends Element>> annotations) {

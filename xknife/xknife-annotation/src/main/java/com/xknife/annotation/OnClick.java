@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
+@ListenerClass(targetType = "android.view.View",
+        setter = "setOnClickListener")
 public @interface OnClick {
 
     @IdRes int[] value() default {};

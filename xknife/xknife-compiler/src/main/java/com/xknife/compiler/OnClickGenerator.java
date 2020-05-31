@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import com.xknife.annotation.ListenerClass;
 import com.xknife.annotation.OnClick;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 
-public class OnClickGenerator implements CodeGenerator {
+public class OnClickGenerator extends CodeGenerator {
 
     @Override
     public void handle(TypeSpec.Builder classBuilder, MethodSpec.Builder methodBuilder, Map<String, Set<? extends Element>> annotations) {
@@ -20,18 +21,20 @@ public class OnClickGenerator implements CodeGenerator {
         if (elements != null) {
             elements.forEach(element -> {
                 OnClick annotation = element.getAnnotation(OnClick.class);
+                //通过反射获取该注解，因此其生命周期RetentionPolicy为RUNTIME
+                ListenerClass listenerClassAnnotation = annotation.annotationType().getDeclaredAnnotation(ListenerClass.class);
                 int[] ids = annotation.value();
                 for (int id : ids) {
                     String viewName = "view_" + Integer.toHexString(id);
-                    classBuilder.addField(FieldSpec.builder(ClassName.get("android.view", "View"), viewName, Modifier.PRIVATE).build());
+                    classBuilder.addField(FieldSpec.builder(ClassName.get("android.view","View"), viewName, Modifier.PRIVATE).build());
                     methodBuilder.addStatement("$N = $T.findRequiredView(source, $L, $S)",
                             viewName, ClassName.get("com.xknife", "Utils"), id, "method '" + element.getSimpleName() + "'");
-                    methodBuilder.addStatement("$N.setOnClickListener(new View.OnClickListener(){\n" +
+                    methodBuilder.addStatement("$N.$N(new View.OnClickListener(){\n" +
                             "   @Override\n" +
                             "   public void onClick(View v) {\n" +
                             "       target.$N(v);\n" +
                             "   }\n" +
-                            "})", viewName, element.getSimpleName())
+                            "})", viewName, listenerClassAnnotation.setter(), element.getSimpleName())
                             .addCode("\n");
                 }
             });

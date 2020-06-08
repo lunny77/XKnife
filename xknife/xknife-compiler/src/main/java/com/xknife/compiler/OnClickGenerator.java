@@ -1,9 +1,10 @@
 package com.xknife.compiler;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.sun.source.util.Trees;
 import com.xknife.annotation.ListenerClass;
 import com.xknife.annotation.OnClick;
 
@@ -15,6 +16,10 @@ import javax.lang.model.element.Modifier;
 
 public class OnClickGenerator extends CodeGenerator {
 
+    public OnClickGenerator(Trees trees) {
+        super(trees);
+    }
+
     @Override
     public void handle(TypeSpec.Builder classBuilder, MethodSpec.Builder methodBuilder, Map<String, Set<? extends Element>> annotations) {
         Set<? extends Element> elements = annotations.get(OnClick.class.getSimpleName());
@@ -25,17 +30,22 @@ public class OnClickGenerator extends CodeGenerator {
                 ListenerClass listenerClassAnnotation = annotation.annotationType().getDeclaredAnnotation(ListenerClass.class);
                 int[] ids = annotation.value();
                 for (int id : ids) {
-                    String viewName = "view_" + Integer.toHexString(id);
-                    classBuilder.addField(FieldSpec.builder(ClassName.get("android.view","View"), viewName, Modifier.PRIVATE).build());
-                    methodBuilder.addStatement("$N = $T.findRequiredView(source, $L, $S)",
-                            viewName, ClassName.get("com.xknife", "Utils"), id, "method '" + element.getSimpleName() + "'");
-                    methodBuilder.addStatement("$N.$N(new View.OnClickListener(){\n" +
-                            "   @Override\n" +
-                            "   public void onClick(View v) {\n" +
-                            "       target.$N(v);\n" +
-                            "   }\n" +
-                            "})", viewName, listenerClassAnnotation.setter(), element.getSimpleName())
-                            .addCode("\n");
+                    String viewName = "view_ox" + Integer.toHexString(id);
+                    classBuilder.addField(FieldSpec.builder(Constants.ANDROID_VIEW, viewName, Modifier.PRIVATE).build());
+                    methodBuilder.addStatement("this.$N = $T.findRequiredView(source, $L, $S)", viewName, Constants.XKNIFE_UTILS, id, "method '" + element.getSimpleName() + "'");
+
+                    TypeSpec debouncingAnnoymousType = TypeSpec.anonymousClassBuilder("")
+                            .addSuperinterface(Constants.XKNIFE_DEBOUNCING_LISTENER)
+                            .addMethod(MethodSpec.methodBuilder("doClick")
+                                    .addAnnotation(Override.class)
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .addParameter(Constants.ANDROID_VIEW, "view")
+                                    .returns(TypeName.VOID)
+                                    .addStatement("target.$N($N)", element.getSimpleName(), "view")
+                                    .build())
+                            .build();
+
+                    methodBuilder.addStatement("$N.$N($L)", viewName, listenerClassAnnotation.setter(), debouncingAnnoymousType).addCode("\n");
                 }
             });
         }

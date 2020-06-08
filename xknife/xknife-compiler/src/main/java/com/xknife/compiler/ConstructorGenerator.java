@@ -1,9 +1,9 @@
 package com.xknife.compiler;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.sun.source.util.Trees;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +14,8 @@ import javax.lang.model.element.Modifier;
 public class ConstructorGenerator extends CodeGenerator {
     private Element classElement;
 
-    public ConstructorGenerator(Element classElement) {
+    public ConstructorGenerator(Trees trees, Element classElement) {
+        super(trees);
         this.classElement = classElement;
     }
 
@@ -28,7 +29,7 @@ public class ConstructorGenerator extends CodeGenerator {
 
         MethodSpec.Builder builder = MethodSpec.constructorBuilder()
                 .addParameter(TypeName.get(classElement.asType()), "target", Modifier.FINAL)
-                .addParameter(ClassName.get("android.view", "View"), "source")
+                .addParameter(Constants.ANDROID_VIEW, "source")
                 .addStatement("this.target = target")
                 .addCode("\n")
                 .addModifiers(Modifier.PUBLIC);

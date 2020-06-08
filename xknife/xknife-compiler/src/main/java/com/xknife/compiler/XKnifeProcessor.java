@@ -1,5 +1,6 @@
 package com.xknife.compiler;
 
+import com.sun.source.util.Trees;
 import com.xknife.annotation.BindColor;
 import com.xknife.annotation.BindString;
 import com.xknife.annotation.BindView;
@@ -26,51 +27,57 @@ public class XKnifeProcessor extends AbstractProcessor {
     private Filer mFiler;
 
     //该注解处理器需要处理的Annotation集合
-    Set<String> mSupportedAnnotationTypes = new HashSet<>(Arrays.asList(
+    private final Set<String> mSupportedAnnotationTypes = new HashSet<>(Arrays.asList(
             BindView.class.getName(),
             BindString.class.getName(),
             BindColor.class.getName(),
             OnClick.class.getName()
     ));
 
+    private Trees mTrees;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         mMessager = processingEnv.getMessager();
         mFiler = processingEnv.getFiler();
-        mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] init()");
+        printMessage("init()");
+
+        mTrees = Trees.instance(processingEnv);
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] process()");
+        printMessage("process()");
 
-        Element classElement = null;
+        TypeElement classElement = null;
         Map<String, Set<? extends Element>> annotationMap = new HashMap<>();
         for (TypeElement annotation : annotations) {
-            mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] annotation: " + annotation.getSimpleName());
+            printMessage("annotation: " + annotation.getSimpleName());
             Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(annotation);
             annotationMap.put(annotation.getSimpleName().toString(), elements);
 
             //获取注解所在类的Element
             if (classElement == null) {
                 for (Element element : elements) {
-                    classElement = element.getEnclosingElement();
+                    classElement = (TypeElement) element.getEnclosingElement();
                     break;
                 }
             }
         }
 
-        if(classElement == null) {
+        if (classElement == null) {
             return false;
         }
 
-        ClassGenerator classGenerator = new ClassGenerator(mFiler, classElement);
-        ConstructorGenerator constructorGenerator = new ConstructorGenerator(classElement);
-        BindViewGenerator bindViewGenerator = new BindViewGenerator();
-        BindStringGenerator bindStringGenerator = new BindStringGenerator();
-        BindColorGenerator bindColorGenerator = new BindColorGenerator();
-        OnClickGenerator onClickGenerator = new OnClickGenerator();
+        ClassGenerator classGenerator = new ClassGenerator(mTrees, mFiler, classElement);
+        ConstructorGenerator constructorGenerator = new ConstructorGenerator(mTrees, classElement);
+        BindViewGenerator bindViewGenerator = new BindViewGenerator(mTrees);
+        bindViewGenerator.rScanner.messager = mMessager;
+
+        BindStringGenerator bindStringGenerator = new BindStringGenerator(mTrees);
+        BindColorGenerator bindColorGenerator = new BindColorGenerator(mTrees);
+        OnClickGenerator onClickGenerator = new OnClickGenerator(mTrees);
 
         bindColorGenerator.nextGenerator = onClickGenerator;
         bindStringGenerator.nextGenerator = bindColorGenerator;
@@ -84,13 +91,17 @@ public class XKnifeProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] getSupportedAnnotationTypes()");
+        printMessage("getSupportedAnnotationTypes()");
         return mSupportedAnnotationTypes;
     }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] getSupportedSourceVersion()");
+        printMessage("getSupportedSourceVersion()");
         return SourceVersion.latestSupported();
+    }
+
+    private void printMessage(String message) {
+        mMessager.printMessage(Diagnostic.Kind.NOTE, "[XKnifeProcessor] " + message);
     }
 }
